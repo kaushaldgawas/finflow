@@ -1,0 +1,88 @@
+server:
+  port: 8222                  # Gateway runs on 8222
+
+spring:
+  application:
+    name: finflow-api-gateway
+  config:
+    import: optional:configserver:http://localhost:8889
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true       # Auto-discover services from Eureka
+          lower-case-service-id: true
+      routes:
+
+        # ─── Auth Service ───
+        - id: auth-service
+          uri: lb://finflow-auth-service     # lb = load balanced via Eureka
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=0
+
+        # ─── Account Service ───
+        - id: account-service
+          uri: lb://finflow-account-service
+          predicates:
+            - Path=/api/v1/accounts/**
+          filters:
+            - StripPrefix=0
+
+        # ─── Transaction Service ───
+        - id: transaction-service
+          uri: lb://finflow-transaction-service
+          predicates:
+            - Path=/api/v1/transactions/**
+          filters:
+            - StripPrefix=0
+
+        # ─── Loan Service ───
+        - id: loan-service
+          uri: lb://finflow-loan-service
+          predicates:
+            - Path=/api/v1/loans/**
+          filters:
+            - StripPrefix=0
+
+        # ─── Notification Service ───
+        - id: notification-service
+          uri: lb://finflow-notification-service
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - StripPrefix=0
+
+        # ─── Analytics Service ───
+        - id: analytics-service
+          uri: lb://finflow-analytics-service
+          predicates:
+            - Path=/api/v1/analytics/**
+          filters:
+            - StripPrefix=0
+
+# ─── Eureka ───
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# ─── Actuator ───
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+info:
+  app:
+    name: FinFlow API Gateway
+    version: 1.0.0
