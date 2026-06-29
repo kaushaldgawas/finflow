@@ -1,0 +1,33 @@
+server:
+  port: 8761                  # Standard Eureka port
+
+spring:
+  application:
+    name: finflow-discovery-server
+  config:
+    import: optional:configserver:http://localhost:8889   # Fetch config from Config Server
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false   # Don't register itself
+    fetch-registry: false         # Don't fetch registry from itself
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  server:
+    wait-time-in-ms-when-sync-empty: 0   # Start immediately without waiting
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  app:
+    name: FinFlow Discovery Server
+    version: 1.0.0
