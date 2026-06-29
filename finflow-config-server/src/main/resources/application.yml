@@ -1,0 +1,28 @@
+server:
+  port: 8889                  # Standard port for Config Server
+
+spring:
+  application:
+    name: finflow-config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/configs   # Read configs from local folder
+  profiles:
+    active: native            # Use local files (no Git repo needed for now)
+
+# Actuator endpoints for health monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, refresh
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  app:
+    name: FinFlow Config Server
+    version: 1.0.0
