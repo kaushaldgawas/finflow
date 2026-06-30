@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="finflow-config-server" />
+        <module name="finflow-discovery-server" />
+        <module name="finflow-api-gateway" />
+        <module name="finflow-auth-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="finflow-api-gateway" options="-parameters" />
+      <module name="finflow-auth-service" options="-parameters" />
+      <module name="finflow-config-server" options="-parameters" />
+      <module name="finflow-discovery-server" options="-parameters" />
+    </option>
+  </component>
+</project>
