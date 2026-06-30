@@ -29,10 +29,6 @@
         <module>finflow-api-gateway</module>
         <module>finflow-auth-service</module>
         <module>finflow-account-service</module>
-        <module>finflow-transaction-service</module>
-        <module>finflow-loan-service</module>
-        <module>finflow-notification-service</module>
-        <module>finflow-analytics-service</module>
     </modules>
 
     <!-- ─── Common Properties ─── -->

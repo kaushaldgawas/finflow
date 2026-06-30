@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="finflow-config-server" />
         <module name="finflow-discovery-server" />
+        <module name="finflow-account-service" />
         <module name="finflow-api-gateway" />
         <module name="finflow-auth-service" />
       </profile>
@@ -16,6 +17,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="finflow-account-service" options="-parameters" />
       <module name="finflow-api-gateway" options="-parameters" />
       <module name="finflow-auth-service" options="-parameters" />
       <module name="finflow-config-server" options="-parameters" />
