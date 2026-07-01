@@ -5,7 +5,7 @@ import com.finflow.transaction.dto.BalanceUpdateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "finflow-account-service")   // ← Eureka service name, no hardcoded URL!
+@FeignClient(name = "finflow-account-service", url = "http://localhost:8082")   // ← Eureka service name, no hardcoded URL!
 public interface AccountServiceClient {
 
     @GetMapping("/api/v1/accounts/number/{accountNumber}")

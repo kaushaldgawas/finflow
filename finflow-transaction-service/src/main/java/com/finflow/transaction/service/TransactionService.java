@@ -32,11 +32,9 @@ public class TransactionService {
     private final AccountServiceClient accountServiceClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    // ─── Fund Transfer (the core operation) ───
     @Transactional
     public TransactionResponse transferFunds(TransferRequest request) {
 
-        // ─── Step 1: Idempotency check - prevent duplicate transfers ───
         if (transactionRepository.existsByIdempotencyKey(request.getIdempotencyKey())) {
             Transaction existing = transactionRepository
                     .findByIdempotencyKey(request.getIdempotencyKey())
@@ -45,12 +43,10 @@ public class TransactionService {
             return mapToResponse(existing);
         }
 
-        // ─── Step 2: Basic validation ───
         if (request.getFromAccountNumber().equals(request.getToAccountNumber())) {
             throw new RuntimeException("Cannot transfer to the same account");
         }
 
-        // ─── Step 3: Create a PENDING transaction record first ───
         Transaction transaction = Transaction.builder()
                 .transactionRef(generateTransactionRef())
                 .idempotencyKey(request.getIdempotencyKey())
@@ -65,37 +61,30 @@ public class TransactionService {
         transaction = transactionRepository.save(transaction);
 
         try {
-            // ─── Step 4: Fetch sender account ───
             AccountResponse fromAccount = accountServiceClient
                     .getAccountByNumber(request.getFromAccountNumber());
 
-            // ─── Step 5: Fetch receiver account ───
             AccountResponse toAccount = accountServiceClient
                     .getAccountByNumber(request.getToAccountNumber());
 
-            // ─── Step 6: Withdraw from sender ───
             accountServiceClient.withdraw(
                     fromAccount.getId(),
                     BalanceUpdateRequest.builder().amount(request.getAmount()).build()
             );
 
-            // ─── Step 7: Deposit to receiver ───
             accountServiceClient.deposit(
                     toAccount.getId(),
                     BalanceUpdateRequest.builder().amount(request.getAmount()).build()
             );
 
-            // ─── Step 8: Mark transaction as SUCCESS ───
             transaction.setStatus(TransactionStatus.SUCCESS);
             transaction = transactionRepository.save(transaction);
 
-            // ─── Step 9: Publish Kafka event ───
             publishTransactionEvent(transaction);
 
             log.info("Transfer successful: {}", transaction.getTransactionRef());
 
         } catch (Exception e) {
-            // ─── If anything fails, mark transaction as FAILED ───
             transaction.setStatus(TransactionStatus.FAILED);
             transaction.setFailureReason(e.getMessage());
             transaction = transactionRepository.save(transaction);
@@ -109,7 +98,6 @@ public class TransactionService {
         return mapToResponse(transaction);
     }
 
-    // ─── Get Transaction History for an Account ───
     public List<TransactionResponse> getTransactionHistory(String accountNumber) {
         return transactionRepository
                 .findByFromAccountNumberOrToAccountNumberOrderByCreatedAtDesc(
@@ -119,14 +107,12 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
-    // ─── Get Single Transaction ───
     public TransactionResponse getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
         return mapToResponse(transaction);
     }
 
-    // ─── Publish event to Kafka ───
     private void publishTransactionEvent(Transaction transaction) {
         TransactionEvent event = TransactionEvent.builder()
                 .transactionRef(transaction.getTransactionRef())
@@ -138,18 +124,20 @@ public class TransactionService {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        kafkaTemplate.send(KafkaTopics.TRANSACTION_EVENTS, transaction.getTransactionRef(), event);
-        log.info("Published Kafka event for transaction: {}", transaction.getTransactionRef());
+        kafkaTemplate.send(KafkaTopics.TRANSACTION_EVENTS,
+                transaction.getTransactionRef(), event);
+        log.info("Published Kafka event for transaction: {}",
+                transaction.getTransactionRef());
     }
 
-    // ─── Generate unique transaction reference ───
     private String generateTransactionRef() {
-        String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String randomPart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String datePart = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String randomPart = UUID.randomUUID().toString()
+                .substring(0, 8).toUpperCase();
         return "TXN" + datePart + randomPart;
     }
 
-    // ─── Map Entity to Response DTO ───
     private TransactionResponse mapToResponse(Transaction transaction) {
         return TransactionResponse.builder()
                 .id(transaction.getId())

@@ -52,3 +52,29 @@ info:
   app:
     name: FinFlow Transaction Service
     version: 1.0.0
+
+    feign:
+      client:
+        config:
+          default:
+            connectTimeout: 3000
+            readTimeout: 10000
+
+    ribbon:
+      eureka:
+        enabled: true
+      ReadTimeout: 5000
+      ConnectTimeout: 5000
+
+      spring:
+        cloud:
+          loadbalancer:
+            ribbon:
+              enabled: false
+
+              logging:
+                level:
+                  com.finflow: DEBUG
+                  feign: DEBUG
+                org.springframework.cloud.openfeign: DEBUG
+

@@ -12,6 +12,7 @@
         <module name="finflow-account-service" />
         <module name="finflow-api-gateway" />
         <module name="finflow-transaction-service" />
+        <module name="finflow-notification-service" />
         <module name="finflow-auth-service" />
       </profile>
     </annotationProcessing>
@@ -23,6 +24,7 @@
       <module name="finflow-auth-service" options="-parameters" />
       <module name="finflow-config-server" options="-parameters" />
       <module name="finflow-discovery-server" options="-parameters" />
+      <module name="finflow-notification-service" options="-parameters" />
       <module name="finflow-transaction-service" options="-parameters" />
     </option>
   </component>

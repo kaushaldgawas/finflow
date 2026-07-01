@@ -41,3 +41,12 @@ info:
   app:
     name: FinFlow Account Service
     version: 1.0.0
+
+
+    spring:
+      jpa:
+        properties:
+          hibernate:
+            jdbc:
+              time_zone: UTC
+        open-in-view: false
