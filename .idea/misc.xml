@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/finflow-notification-service/pom.xml" />
         <option value="$PROJECT_DIR$/finflow-transaction-service/pom.xml" />
         <option value="$PROJECT_DIR$/finflow-loan-service/pom.xml" />
+        <option value="$PROJECT_DIR$/finflow-analytics-service/pom.xml" />
       </list>
     </option>
   </component>
